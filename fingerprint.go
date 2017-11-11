@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"sort"
 	"strings"
 )
 
@@ -23,8 +24,8 @@ type FingerPrint struct {
 }
 
 //borrowing heavily from Clair and https://github.com/coreos/clair/blob/master/ext/featurefmt/rpm/rpm.go
-func rpmInstalledPackages() (map[string]Package, error) {
-	packagesMap := make(map[string]Package)
+func rpmInstalledPackages() ([]Package, error) {
+	var packages []Package
 	//	dir := "/var/log/rpm/"
 	//	out, err := exec.Command("rpm", "--dbpath", dir, "-qa", "--qf", "%{NAME} %{EPOCH}:%{VERSION}-%{RELEASE}\n").CombinedOutput()
 	out, err := exec.Command("rpm", "-qa", "--qf", "%{NAME} %{EPOCH}:%{VERSION}-%{RELEASE}\n").CombinedOutput()
@@ -53,19 +54,20 @@ func rpmInstalledPackages() (map[string]Package, error) {
 			Name:    line[0],
 			Version: version,
 		}
-		packagesMap[pkg.Name+"#"+pkg.Version] = pkg
+		packages = append(packages, pkg)
 	}
 
-	return packagesMap, nil
+	return packages, nil
 }
 
-func fmtRPMPackages(pkgs map[string]Package) string {
-	out := ""
-	for p := range pkgs {
-		out = out + "\n" + p
+func fmtRPMPackages(pkgs []Package) string {
+	var s []string
+	for _, pkg := range pkgs {
+		s = append(s, pkg.Name+"#"+pkg.Version)
 	}
+	sort.Strings(s)
 
-	return out
+	return strings.Join(s, "\n")
 }
 
 func phpEnv() (string, error) {
