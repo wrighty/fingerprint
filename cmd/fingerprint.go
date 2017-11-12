@@ -22,7 +22,7 @@ func main() {
 	for _, fp := range fps {
 		hash.Write([]byte(fp.Details))
 	}
-	fmt.Printf("%x", hash.Sum(nil))
+	fmt.Printf("%x\n", hash.Sum(nil))
 	if *verbose {
 		for _, fp := range fps {
 			fmt.Println(fp.Source)
