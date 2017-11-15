@@ -26,8 +26,6 @@ type FingerPrint struct {
 //borrowing heavily from Clair and https://github.com/coreos/clair/blob/master/ext/featurefmt/rpm/rpm.go
 func rpmInstalledPackages() ([]Package, error) {
 	var packages []Package
-	//	dir := "/var/log/rpm/"
-	//	out, err := exec.Command("rpm", "--dbpath", dir, "-qa", "--qf", "%{NAME} %{EPOCH}:%{VERSION}-%{RELEASE}\n").CombinedOutput()
 	out, err := exec.Command("rpm", "-qa", "--qf", "%{NAME} %{EPOCH}:%{VERSION}-%{RELEASE}\n").CombinedOutput()
 	if err != nil {
 		log.Print(err)
